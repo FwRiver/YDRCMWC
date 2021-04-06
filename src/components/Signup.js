@@ -155,9 +155,7 @@ export default function Signup() {
                                     <option value="G1">G1</option>
                                     <option value="G2">G2</option>
                                     <option value="G3-A">G3-A</option>
-                                    <option value="G3-B">G3-B</option>
                                     <option value="G4-A">G4-A</option>
-                                    <option value="G4-B">G4-B</option>
                                     <option value="G5">G5</option>
                                     <option value="G6">G6</option>
                                     <option value="G7">G7</option>

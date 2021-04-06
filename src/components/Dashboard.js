@@ -28,13 +28,13 @@ export default function Dashboard() {
 
         async function getUser() {
             await db.collection('users').where('email', '==', currentUser.email).get().then(res => {
-                let info;
+                let info
                 if (!res.empty) {
                     info = res.docs[0].data()
                 }
                 setUser(info)
                 console.log(user)
-            })
+            }).catch(err => console.log(err))
         }
         getRecords()
         getUser()
@@ -62,7 +62,7 @@ export default function Dashboard() {
                         <td width="10%">AR Level</td>
                         <td>Start Date</td>
                         <td>End Date</td>
-                        <td width="12%">Readed (hrs)</td>
+                        <td width="12%">Hours Read</td>
                     </tr>
                 </thead>
                 <tbody>
