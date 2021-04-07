@@ -8,7 +8,7 @@ export default function Login() {
     const wordRef = useRef()
     const startDateRef = useRef()
     const endDateRef = useRef()
-    const hoursRef = useRef()
+    const minuteRef = useRef()
     const arlevelRef = useRef()
 
     const { currentUser, newRecord } = useAuth()
@@ -27,7 +27,7 @@ export default function Login() {
                 book_word_count: parseInt(wordRef.current.value),
                 start_date: startDateRef.current.value,
                 end_date: endDateRef.current.value,
-                total_reading_hour: hoursRef.current.value,
+                total_reading_minute: minuteRef.current.value,
                 book_ar_level: parseFloat(arlevelRef.current.value),
                 email: currentUser.email,
                 created_at: Date.now()/1000
@@ -72,8 +72,8 @@ export default function Login() {
                             </Form.Group>
 
                             <Form.Group id="hours" as={Col} md="4">
-                                <Form.Label>Hours readed</Form.Label>
-                                <Form.Control type="number" ref={hoursRef} required />
+                                <Form.Label>Minutes Read</Form.Label>
+                                <Form.Control type="number" ref={minuteRef} required />
                             </Form.Group>
                         </Form.Row>
 

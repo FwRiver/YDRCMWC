@@ -13,8 +13,6 @@ export function AuthProvider({ children }) {
     const userRef = db.collection('users')
 
     async function signup(email, password, profile) {
-        auth.createUserWithEmailAndPassword(email, password)
-
         const data = {
             address: profile.address,
             address_city: profile.city,
@@ -24,16 +22,24 @@ export function AuthProvider({ children }) {
             child_first_name: profile.child_first_name,
             child_last_name: profile.child_last_name,
             current_grade: profile.grade,
-            email: currentUser.email,
+            email: profile.email,
             group: profile.group,
             group_num: profile.group_num,
             parent_wechat: profile.parent_wechat,
             reading_level: profile.reading_level
         }
 
-        let res = await userRef.add(data)
-        console.log(data)
-        return res
+        try {
+            let res = await userRef.add(data)
+
+            if (res) {
+                return await auth.createUserWithEmailAndPassword(email, password)
+            }
+        }catch (e) {
+            console.log(e)
+        }
+
+        
     }
 
     async function login(email, password) {
@@ -68,18 +74,23 @@ export function AuthProvider({ children }) {
     }
 
     async function newRecord(record) {
-        console.log(record)
+        // console.log(record)
         const recordRef = db.collection('records')
         return await recordRef.add(record)
     }
     
     useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged(user => {
-            setCurrentUser(user)
+        auth.onAuthStateChanged(user => {
+            if(user) {
+                setLoading(true)
+                localStorage.setItem('user', JSON.stringify(user))
+                setCurrentUser(user)
+            }
+            else {
+                localStorage.removeItem('user')
+            }
             setLoading(false)
         })
-    
-        return unsubscribe
     }, [])    
 
     const value = {

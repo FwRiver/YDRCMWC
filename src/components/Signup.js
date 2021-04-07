@@ -43,7 +43,8 @@ export default function Signup() {
             group: groupRef.current.value,
             group_num: groupNumRef.current.value,
             parent_wechat: parentWechatRef.current.value,
-            reading_level: levelRef.current.value
+            reading_level: levelRef.current.value,
+            email: emailRef.current.value
         }
 
         if (passwordRef.current.value !== passwordConfirmRef.current.value) {
@@ -58,7 +59,7 @@ export default function Signup() {
             await signup(emailRef.current.value, passwordRef.current.value, profile)
             history.push('/')
         } catch {
-            setError('Email already used!')
+            setError('Failed to create your account! Please try again later.')
         }
 
         setLoading(false)

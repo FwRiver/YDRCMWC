@@ -1,5 +1,5 @@
-import React, { useState, useEffect, queryOverview } from 'react'
-import { Nav, Form, Navbar, Button, Table } from 'react-bootstrap'
+import React, { useState, useEffect } from 'react'
+import { Table } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 import { db } from '../firebase'
@@ -8,7 +8,9 @@ import { db } from '../firebase'
 import HeadNav from './HeadNav'
 
 export default function Dashboard() {
-    const { currentUser, logout } = useAuth()
+    const history = useHistory()
+    // const { currentUser } = useAuth()
+    const currentUser = JSON.parse(localStorage.getItem('user'))
     const [records, setRecords] = useState([])
     const [user, setUser] = useState({})
     let words = 0
@@ -21,8 +23,8 @@ export default function Dashboard() {
                     res.forEach(item => {
                         rec.push(item.data())
                     })
+                    setRecords(rec)
                 }
-                setRecords(rec)
             }).catch(err => console.log(err))
         }
 
@@ -31,19 +33,22 @@ export default function Dashboard() {
                 let info
                 if (!res.empty) {
                     info = res.docs[0].data()
-                }
-                setUser(info)
-                console.log(user)
+                    console.log(info)
+                    setUser(info)
+                }  
             }).catch(err => console.log(err))
         }
-        getRecords()
-        getUser()
         
+        getUser()
+        getRecords()
+    
     }, [])
 
     records.forEach((item) => {
         words += item.book_word_count
     })
+
+    let currentGoal = getCurrentGoal(user.current_grade)
 
     return (
         <div>
@@ -52,28 +57,28 @@ export default function Dashboard() {
             <h3 style={{margin: '10px 0px 0px 0px'}}>Welcome! {user.child_first_name}</h3>
             <p style={{fontSize: '18px'}}>Your current reading class level: {user.reading_level}</p>
             <Link to="/new-record" className="btn btn-primary" style={{margin: '10px 10px 10px 0px'}}>New Record</Link>
-            <label style={{color: 'gray'}}>Total Word Count: {words} | Current Monthly Progress: {words}/120000 ({((words/120000)*100).toFixed(2) + "%"})</label>
+            <label style={{color: 'gray'}}>Total Word Count: {words} | Current Monthly Progress: {words}/{currentGoal} ({((words/120000)*100).toFixed(2) + "%"})</label>
             <br />
             <Table striped bordered hover>
                 <thead>
                     <tr>
-                        <td width="40%">Book Name</td>
+                        <td width="35%">Book Name</td>
                         <td width="15%">Total Word Count</td>
                         <td width="10%">AR Level</td>
                         <td>Start Date</td>
                         <td>End Date</td>
-                        <td width="12%">Hours Read</td>
+                        <td width="12%">Minutes Read</td>
                     </tr>
                 </thead>
                 <tbody>
-                {records.map((item) =>
-                    <tr>
+                {records.map((item, index) =>
+                    <tr key={index}>
                         <td>{item.book_name}</td>
                         <td>{item.book_word_count}</td>
                         <td>{item.book_ar_level}</td>
                         <td>{item.start_date}</td>
                         <td>{item.end_date}</td>
-                        <td>{item.total_reading_hour}</td>
+                        <td>{item.total_reading_minute}</td>
                     </tr>
                 )}
                 </tbody>
@@ -92,4 +97,24 @@ function getTime(sec) {
         year: 'numeric'
       })
     return dateFormat
+}
+
+function getCurrentGoal(grade) {
+    switch(grade) {
+        case "K":
+        case "G1":
+        case "G2":
+            return 80000
+        case "G3":
+        case "G4":
+        case "G5":
+            return 120000
+        case "G6":
+        case "G7":
+        case "G8":
+            return 150000
+        default:
+            return 120000
+
+    }
 }
