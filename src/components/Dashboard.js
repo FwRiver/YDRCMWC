@@ -57,7 +57,7 @@ export default function Dashboard() {
             <h3 style={{margin: '10px 0px 0px 0px'}}>Welcome! {user.child_first_name}</h3>
             <p style={{fontSize: '18px'}}>Your current reading class level: {user.reading_level}</p>
             <Link to="/new-record" className="btn btn-primary" style={{margin: '10px 10px 10px 0px'}}>New Record</Link>
-            <label style={{color: 'gray'}}>Total Word Count: {words} | Current Monthly Progress: {words}/{currentGoal} ({((words/120000)*100).toFixed(2) + "%"})</label>
+            <label style={{color: 'gray'}}>Total Word Count: {words} | Current Monthly Progress: {words}/{currentGoal} ({((words/currentGoal)*100).toFixed(2) + "%"})</label>
             <br />
             <Table striped bordered hover>
                 <thead>
