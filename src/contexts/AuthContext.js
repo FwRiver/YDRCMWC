@@ -69,8 +69,9 @@ export function AuthProvider({ children }) {
         return currentUser.updatePassword(password)
     }
 
-    async function updateProfile(nprofile) {
-        
+    async function updateRecord(record) {
+        console.log(record)
+        return await db.collection('records').doc(record.id).update(record)
     }
 
     async function newRecord(record) {
@@ -101,7 +102,7 @@ export function AuthProvider({ children }) {
         resetPassword,
         updateEmail,
         updatePassword,
-        updateProfile,
+        updateRecord,
         newRecord
     }
 

@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { Table } from 'react-bootstrap'
+import { Table, Button } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 import { db } from '../firebase'
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 
 // Components
 import HeadNav from './HeadNav'
@@ -17,13 +20,16 @@ export default function Dashboard() {
 
     useEffect(() => {
         async function getRecords() {
-            await db.collection('records').where('email', '==', currentUser.email).get().then(res => {
+            await db.collection('records').where('email', '==', currentUser.email).orderBy("created_at", "asc").get().then(res => {
                 let rec = []
                 if(!res.empty) {
                     res.forEach(item => {
-                        rec.push(item.data())
+                        let record = item.data()
+                        record._id = item.id
+                        rec.push(record)
                     })
                     setRecords(rec)
+                    console.log(records)
                 }
             }).catch(err => console.log(err))
         }
@@ -50,6 +56,19 @@ export default function Dashboard() {
 
     let currentGoal = getCurrentGoal(user.current_grade)
 
+    // Functions
+    async function deleteRecord(id) {
+        try {
+            await db.collection('records').doc(id).delete()
+            history.push('/')
+        } catch (e) {
+            console.log(e)
+        }
+        
+    }
+
+    let that = this
+
     return (
         <div>
             <HeadNav>        
@@ -68,6 +87,7 @@ export default function Dashboard() {
                         <td>Start Date</td>
                         <td>End Date</td>
                         <td width="12%">Minutes Read</td>
+                        <td>Actions</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,6 +99,24 @@ export default function Dashboard() {
                         <td>{item.start_date}</td>
                         <td>{item.end_date}</td>
                         <td>{item.total_reading_minute}</td>
+                        <td>
+                        <Link to={
+                            {     
+                                pathname: '/edit-record',
+                                id: item._id
+                            }
+                         }>
+                             <FontAwesomeIcon style={{margin: '5px'}} icon={faEdit} />
+                         </Link>
+                         <Link to={
+                            {     
+                                pathname: '/delete-record',
+                                id: item._id
+                            }
+                         }>
+                             <FontAwesomeIcon style={{margin: '5px'}} icon={faTrash} color="red"/>
+                         </Link>
+                        </td>
                     </tr>
                 )}
                 </tbody>

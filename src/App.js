@@ -12,6 +12,8 @@ import UpdateProfile from './components/UpdateProfile'
 import Signup from './components/Signup'
 import Dashboard from './components/Dashboard'
 import NewRecord from './components/NewRecord'
+import EditRecord from './components/EditRecord'
+import DeleteRecord from './components/DeleteRecord'
 
 function App() {
   return (
@@ -27,6 +29,8 @@ function App() {
               <Route path="/forgot-password" component={ForgotPassword} />
 
               <PrivateRoute path="/new-record" component={NewRecord} />
+              <PrivateRoute path="/edit-record" component={EditRecord} />
+              <PrivateRoute path="/delete-record" component={DeleteRecord} />
             </Switch>
           </AuthProvider>
         </Router>
