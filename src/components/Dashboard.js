@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Table, Button } from 'react-bootstrap'
+import { Table, Button, Modal } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
 import { db } from '../firebase'
@@ -18,9 +18,13 @@ export default function Dashboard() {
     const [user, setUser] = useState({})
     let words = 0
 
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
     useEffect(() => {
         async function getRecords() {
-            await db.collection('records').where('email', '==', currentUser.email).orderBy("created_at", "asc").get().then(res => {
+            await db.collection('records').where('email', '==', currentUser.email).get().then(res => {
                 let rec = []
                 if(!res.empty) {
                     res.forEach(item => {
@@ -74,7 +78,12 @@ export default function Dashboard() {
             <HeadNav>        
             </HeadNav>
             <h3 style={{margin: '10px 0px 0px 0px'}}>Welcome! {user.child_first_name}</h3>
-            <p style={{fontSize: '18px'}}>Your current reading class level: {user.reading_level}</p>
+            <p style={{fontSize: '18px'}}>
+                Your current reading class level: {user.reading_level}
+                {/* <br /> */}
+                {/* Current Reading Balance: ${} */}
+            </p>
+            <p></p>
             <Link to="/new-record" className="btn btn-primary" style={{margin: '10px 10px 10px 0px'}}>New Record</Link>
             <label style={{color: 'gray'}}>Total Word Count: {words} | Current Monthly Progress: {words}/{currentGoal} ({((words/currentGoal)*100).toFixed(2) + "%"})</label>
             <br />
@@ -82,11 +91,11 @@ export default function Dashboard() {
                 <thead>
                     <tr>
                         <td width="35%">Book Name</td>
-                        <td width="15%">Total Word Count</td>
-                        <td width="10%">AR Level</td>
+                        <td>Total Word Count</td>
+                        <td>ATOS Book Level</td>
                         <td>Start Date</td>
                         <td>End Date</td>
-                        <td width="12%">Minutes Read</td>
+                        <td>Minutes Read</td>
                         <td>Actions</td>
                     </tr>
                 </thead>
@@ -121,6 +130,22 @@ export default function Dashboard() {
                 )}
                 </tbody>
             </Table>
+            {/* <Button variant="primary" onClick={getAllUser}>Get</Button> */}
+
+            {/* <Modal show={show} onHide={handleClose}>
+                <Modal.Header closeButton>
+                <Modal.Title>Confirmation</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Are you sure you want to delete this record? This act can't be cancelled</Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                    Cancel
+                </Button>
+                <Button variant="primary" onClick={handleClose}>
+                    Confirm
+                </Button>
+                </Modal.Footer>
+            </Modal> */}
         </div>
     )
 }
@@ -156,3 +181,16 @@ function getCurrentGoal(grade) {
 
     }
 }
+
+// async function getAllUser() {
+//     let users = new Array()
+//     db.collection('users').get().then(res => {
+//         let i = 0
+//         res.forEach((doc) => {
+//             // console.log(doc.data())
+//             users[i] = doc.data()
+//             i++
+//         });
+//     })
+//     console.log(JSON.stringify(users))
+// }
