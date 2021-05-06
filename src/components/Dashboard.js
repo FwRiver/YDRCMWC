@@ -15,6 +15,7 @@ export default function Dashboard() {
     // const { currentUser } = useAuth()
     const currentUser = JSON.parse(localStorage.getItem('user'))
     const [records, setRecords] = useState([])
+    // const [users, setUsers] = useState([])
     const [user, setUser] = useState({})
     let words = 0
 
@@ -24,7 +25,7 @@ export default function Dashboard() {
 
     useEffect(() => {
         async function getRecords() {
-            await db.collection('records').where('email', '==', currentUser.email).get().then(res => {
+            await db.collection('records').where('email', '==', currentUser.email).orderBy("end_date","desc").get().then(res => {
                 let rec = []
                 if(!res.empty) {
                     res.forEach(item => {
@@ -43,19 +44,39 @@ export default function Dashboard() {
                 let info
                 if (!res.empty) {
                     info = res.docs[0].data()
-                    console.log(info)
+                    // console.log(info)
                     setUser(info)
                 }  
             }).catch(err => console.log(err))
         }
-        
+
+        // async function getAllUser() {
+        //     await db.collection('users').where("reading_level", "==", "G4-B").get().then(res => {
+        //         let users = []
+        //         if(!res.empty) {
+        //             res.forEach(item => {
+        //                 let user = item.data()
+        //                 user._id = item.id
+        //                 users.push(user)
+        //                 console.log(user.group + '-' + user.group_num + " | " + user.child_first_name + " " + user.child_last_name )
+        //             })
+        //             setUsers(users)
+        //             // console.log(users)
+        //         }
+        //     }).catch(err => console.log(err))
+        // }
+
         getUser()
         getRecords()
+        // getAllUser()
     
     }, [])
 
     records.forEach((item) => {
-        words += item.book_word_count
+        let created = new Date(item.end_date)
+        let current = new Date()
+        if (created.getMonth() == current.getMonth() && created.getFullYear() == current.getFullYear())
+            words += item.book_word_count
     })
 
     let currentGoal = getCurrentGoal(user.current_grade)
@@ -130,7 +151,7 @@ export default function Dashboard() {
                 )}
                 </tbody>
             </Table>
-            {/* <Button variant="primary" onClick={getAllUser}>Get</Button> */}
+            {/* <Button variant="primary" onClick={getAllPassed}>Get</Button> */}
 
             {/* <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
@@ -148,6 +169,37 @@ export default function Dashboard() {
             </Modal> */}
         </div>
     )
+
+    // async function getAllPassed() {
+    //     console.log("Processing...")
+    //     let passed = []
+    //     // console.log(users)
+    //     users.forEach(async(item) => {
+    //         // console.log(item)
+    //         await db.collection('records').where("email", "==", item.email).get().then(res => {
+    //             // console.log(res)
+    //             let total = 0
+    //             if (!res.empty) {
+    //                 res.forEach(item => {
+    //                     let rec = item.data()
+    //                     total += parseInt(rec.book_word_count)
+                        
+    //                 })
+    //             }              
+                
+    //             item.total = total
+    //             if (total >= 120000) {
+    //                 passed.push(item)
+    //                 console.log(item.group + "-" + item.group_num + " " + item.child_first_name + " " + item.child_last_name + " | " + total)
+    //             }
+    //         }).catch(err => console.log(err))
+    //     })
+
+    //     console.log(passed)
+    //     passed.forEach(item => {
+    //         console.log(item)
+    //     })
+    // }
 }
 
 //functions
@@ -171,26 +223,14 @@ function getCurrentGoal(grade) {
         case "G3":
         case "G4":
         case "G5":
-            return 120000
+            return 160000
         case "G6":
         case "G7":
         case "G8":
-            return 150000
+            return 250000
         default:
-            return 120000
+            return 160000
 
     }
 }
 
-// async function getAllUser() {
-//     let users = new Array()
-//     db.collection('users').get().then(res => {
-//         let i = 0
-//         res.forEach((doc) => {
-//             // console.log(doc.data())
-//             users[i] = doc.data()
-//             i++
-//         });
-//     })
-//     console.log(JSON.stringify(users))
-// }

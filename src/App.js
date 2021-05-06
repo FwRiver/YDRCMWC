@@ -15,6 +15,12 @@ import NewRecord from './components/NewRecord'
 import EditRecord from './components/EditRecord'
 import DeleteRecord from './components/DeleteRecord'
 
+import AdminLogin from './components/AdminPortal/Login'
+import AdminDashboard from './components/AdminPortal/Dashboard'
+import AdminManageUser from './components/AdminPortal/ManageUser'
+import AdminClassList from './components/AdminPortal/Classes'
+import AdminSignup from './components/AdminPortal/Signup'
+
 function App() {
   return (
     <Container style={{ minHeight: '100vh' }}>
@@ -22,15 +28,25 @@ function App() {
         <Router>
           <AuthProvider>
             <Switch> 
-              <PrivateRoute exact path="/" component={Dashboard} />
-              <PrivateRoute path="/update-profile" component={UpdateProfile} />
               <Route path="/signup" component={Signup} />
               <Route path="/login" component={Login} />
               <Route path="/forgot-password" component={ForgotPassword} />
 
+              <PrivateRoute exact path="/" component={Dashboard} />
+              {/* <PrivateRoute path="/update-profile" component={UpdateProfile} /> */}
               <PrivateRoute path="/new-record" component={NewRecord} />
               <PrivateRoute path="/edit-record" component={EditRecord} />
               <PrivateRoute path="/delete-record" component={DeleteRecord} />
+
+              {/*
+              ADMIN PORTAL ROUTES
+               */}
+              <Route path="/a/login" component={AdminLogin} />
+              <Route path="/a/signup" component={AdminSignup} />
+              <PrivateRoute exact path="/a/" component={AdminDashboard} />
+              <PrivateRoute path="/a/manage-user" component={AdminManageUser} />
+              <PrivateRoute path="/a/classes" component={AdminClassList} />
+              
             </Switch>
           </AuthProvider>
         </Router>
