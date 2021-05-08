@@ -18,6 +18,7 @@ export default function Dashboard() {
     // const [users, setUsers] = useState([])
     const [user, setUser] = useState({})
     let words = 0
+    let total_words = 0
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -72,14 +73,16 @@ export default function Dashboard() {
     
     }, [])
 
+    let current = new Date()
     records.forEach((item) => {
         let created = new Date(item.end_date)
-        let current = new Date()
+
+        total_words += item.book_word_count
         if (created.getMonth() == current.getMonth() && created.getFullYear() == current.getFullYear())
             words += item.book_word_count
     })
 
-    let currentGoal = getCurrentGoal(user.current_grade)
+    let currentGoal = getCurrentGoal(user.reading_level)
 
     // Functions
     async function deleteRecord(id) {
@@ -106,7 +109,7 @@ export default function Dashboard() {
             </p>
             <p></p>
             <Link to="/new-record" className="btn btn-primary" style={{margin: '10px 10px 10px 0px'}}>New Record</Link>
-            <label style={{color: 'gray'}}>Total Word Count: {words} | Current Monthly Progress: {words}/{currentGoal} ({((words/currentGoal)*100).toFixed(2) + "%"})</label>
+            <label style={{color: 'gray'}}>Total Word Count: {total_words} | Current Monthly Progress: {words}/{currentGoal} ({((words/currentGoal)*100).toFixed(2) + "%"})</label>
             <br />
             <Table striped bordered hover>
                 <thead>
@@ -214,16 +217,19 @@ function getTime(sec) {
     return dateFormat
 }
 
-function getCurrentGoal(grade) {
-    switch(grade) {
+function getCurrentGoal(level) {
+    console.log(level)
+    switch(level) {
         case "K":
         case "G1":
-        case "G2":
             return 80000
-        case "G3":
-        case "G4":
-        case "G5":
+        case "G2":
+        case "G3-A":
             return 160000
+        case "G4-A":
+        case "G4-B":
+        case "G5":
+            return 250000
         case "G6":
         case "G7":
         case "G8":
