@@ -1,3 +1,13 @@
+/**
+ * ToDo
+ * - Reading balance display
+ * - Reading Wallet
+ * 
+ * Last Updated: 2021-05-09
+ * Last Updated By: 寒
+ */
+
+
 import React, { useState, useEffect } from 'react'
 import { Table, Button, Modal } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
@@ -104,8 +114,13 @@ export default function Dashboard() {
             <h3 style={{margin: '10px 0px 0px 0px'}}>Welcome! {user.child_first_name}</h3>
             <p style={{fontSize: '18px'}}>
                 Your current reading class level: {user.reading_level}
+
+                {
+                // developing
+                }
                 {/* <br /> */}
-                {/* Current Reading Balance: ${} */}
+                {/* Current Reading Balance: ${} */} 
+                
             </p>
             <p></p>
             <Link to="/new-record" className="btn btn-primary" style={{margin: '10px 10px 10px 0px'}}>New Record</Link>
@@ -218,25 +233,25 @@ function getTime(sec) {
 }
 
 function getCurrentGoal(level) {
-    console.log(level)
-    switch(level) {
-        case "K":
-        case "G1":
+    // console.log(level)
+
+    // check if starts with certain level
+    switch(true) {
+        case /^K/.test(level):
+        case /^G1/.test(level):
             return 80000
-        case "G2":
-        case "G3-A":
+        case /^G2/.test(level):
+        case /^G3/.test(level):
             return 160000
-        case "G4-A":
-        case "G4-B":
-        case "G5":
+        case /^G4/.test(level):
+        case /^G5/.test(level):
             return 250000
-        case "G6":
-        case "G7":
-        case "G8":
+        case /^G6/.test(level):
+        case /^G7/.test(level):
+        case /^G8/.test(level):
             return 250000
         default:
-            return 160000
-
+            return 1000000
     }
 }
 
