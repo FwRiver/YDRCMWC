@@ -83,15 +83,6 @@ export default function Dashboard() {
     
     }, [])
 
-    let current = new Date()
-    records.forEach((item) => {
-        let created = new Date(item.end_date)
-
-        total_words += item.book_word_count
-        if (created.getMonth() == current.getMonth() && created.getFullYear() == current.getFullYear())
-            words += item.book_word_count
-    })
-
     let currentGoal = getCurrentGoal(user.reading_level)
 
     // Functions
@@ -105,7 +96,20 @@ export default function Dashboard() {
         
     }
 
-    let that = this
+    let current = new Date()
+    // console.log(records)
+    records.forEach((item) => {
+        let created = new Date(item.end_date)
+
+        total_words += item.book_word_count
+        // console.log(item.book_word_count + " Current: "+ current.getMonth() + ":" + current.getFullYear())
+        // console.log(item.book_word_count + " Created: "+ created.getMonth() + ":" + created.getFullYear())
+        // console.log(created.getUTCMonth())
+        if ( (created.getUTCMonth() == current.getUTCMonth()) && (created.getUTCFullYear() == current.getUTCFullYear()) )
+            words += item.book_word_count
+    })
+
+    
 
     return (
         <div>
