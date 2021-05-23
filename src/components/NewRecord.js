@@ -22,6 +22,8 @@ export default function Login() {
         try {
             setError('')
             setLoading(true)
+
+            // Set record
             let record = {
                 book_name: bookRef.current.value,
                 book_word_count: parseInt(wordRef.current.value),
@@ -33,6 +35,8 @@ export default function Login() {
                 created_at: Date.now()/1000
             }
             await newRecord(record)
+
+            // redirect back to the home page
             history.push('/')
         } catch {
             setError('Email or password incorrect')
@@ -48,6 +52,8 @@ export default function Login() {
                 <Card.Body>
                     <h2 className="text-center mb-4">New Reading Record</h2>
                     {error && <Alert variant="danger">{error}</Alert>}
+                    
+                    {/* New Record Form */}
                     <Form onSubmit={ handleSubmit }>
                         <Form.Row>
                             <Form.Group id="book_name" as={Col} md="8">

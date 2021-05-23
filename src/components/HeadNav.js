@@ -20,9 +20,10 @@ export default function HeadNav() {
         <Navbar expand="xl" bg="light" variant="light">
             <Navbar.Brand href="/">YDRC MWC</Navbar.Brand>
             <Nav className="mr-auto">
+                <Nav.Link href="/wallet" style={{color: '#007bff'}}>Wallet</Nav.Link>
             </Nav>
             <Form inline>
-                <Button onClick={handleLogout} variant="outline-dark">
+                <Button onClick={handleLogout} variant="outline-primary">
                 Log Out
                 </Button>
             </Form>
