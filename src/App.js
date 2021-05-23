@@ -38,15 +38,6 @@ function App() {
               <PrivateRoute path="/edit-record" component={EditRecord} />
               <PrivateRoute path="/delete-record" component={DeleteRecord} />
 
-              {/*
-              ADMIN PORTAL ROUTES
-               */}
-              <Route path="/a/login" component={AdminLogin} />
-              <Route path="/a/signup" component={AdminSignup} />
-              <PrivateRoute exact path="/a/" component={AdminDashboard} />
-              <PrivateRoute path="/a/manage-user" component={AdminManageUser} />
-              <PrivateRoute path="/a/classes" component={AdminClassList} />
-              
             </Switch>
           </AuthProvider>
         </Router>
