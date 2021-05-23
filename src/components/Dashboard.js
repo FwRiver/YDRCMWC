@@ -1,10 +1,7 @@
-/**
- * ToDo
- * - Reading balance display
- * - Reading Wallet
- * 
- * Last Updated: 2021-05-09
+/*
+ * Last Updated: 2021-05-23
  * Last Updated By: 寒
+ * 
  */
 
 
