@@ -12,7 +12,9 @@ import React, { useState, useEffect } from 'react'
 import { Table, Button, Modal } from 'react-bootstrap'
 import { useAuth } from '../contexts/AuthContext'
 import { Link, useHistory } from 'react-router-dom'
+
 import { db } from '../firebase'
+import firebase from 'firebase'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
@@ -21,11 +23,12 @@ import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons'
 import HeadNav from './HeadNav'
 
 export default function Dashboard() {
+    const updateRef = db.collection('config').doc('update_status')
+
     const history = useHistory()
     // const { currentUser } = useAuth()
     const currentUser = JSON.parse(localStorage.getItem('user'))
     const [records, setRecords] = useState([])
-    const [users, setUsers] = useState([])
     const [user, setUser] = useState({})
     const [showUpdate, setUpdateShow] = useState(false)
     const [updateInfo, setUpdateInfo] = useState({
@@ -66,15 +69,15 @@ export default function Dashboard() {
                         rec.push(record)
                     })
                     setRecords(rec)
-                    console.log(records)
+                    // console.log(records)
                 }
             }).catch(err => console.log(err))
         }
 
         // Get Update Information
         async function getUpdateInfo() {
-            let updateInfo = (await db.collection('config').doc('update_status').get()).data()
-            console.log(updateInfo.added)
+            let updateInfo = (await updateRef.get()).data()
+            // console.log(updateInfo.added)
             
             if (updateInfo.has_new_update) {
                 // console.log(currentUser.email)
@@ -117,32 +120,9 @@ export default function Dashboard() {
         // console.log(item.book_word_count + " Current: "+ current.getMonth() + ":" + current.getFullYear())
         // console.log(item.book_word_count + " Created: "+ created.getMonth() + ":" + created.getFullYear())
         // console.log(created.getUTCMonth())
-        if ( (created.getUTCMonth() == current.getUTCMonth()) && (created.getUTCFullYear() == current.getUTCFullYear()) )
+        if ( (created.getUTCMonth() === current.getUTCMonth()) && (created.getUTCFullYear() === current.getUTCFullYear()) )
             words += item.book_word_count
     })
-
-
-    // user.reading_balance = 100;
-    // user.balance_details = [
-    //     {
-    //         date: "2020-05-12",
-    //         description: "Test Blance Inc Record",
-    //         type: 1,
-    //         amount: 100,
-    //         current_balance: 100 
-    //     },
-    //     {
-    //         date: "2020-05-12",
-    //         description: "Test Blance Expe Record",
-    //         type: 0,
-    //         amount: 50,
-    //         current_balance: 50 
-    //     }
-    // ]
-    console.log(user)
-    // db.collection('users').doc(user._id).update(user).then(res => console.log(res)).catch(err => console.log(err))
-
-    
 
     return (
         <div>
@@ -241,13 +221,24 @@ export default function Dashboard() {
                     </ul>
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="primary" onClick={handleClose}>
-                        Update
+                    <Button variant="primary" onClick={updateUser}>
+                        Update Now
                     </Button>
                 </Modal.Footer>
             </Modal>
         </div>
     )   
+
+    async function updateUser() {
+        let userDetails = user
+        userDetails.reading_balance = 0
+        userDetails.balance_details = []
+        await db.collection('users').doc(user._id).update(userDetails)
+        await updateRef.update({
+            users_updated: firebase.firestore.FieldValue.arrayUnion(currentUser.email)
+        })
+        handleClose()
+    }
 
     // 备用函数
     // async function getAllPassed() {
@@ -295,8 +286,6 @@ function getTime(sec) {
 }
 
 function getCurrentGoal(level) {
-    // console.log(level)
-
     // check if starts with certain level
     switch(true) {
         case /^K/.test(level):

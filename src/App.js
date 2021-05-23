@@ -1,3 +1,12 @@
+/**
+ * ToDo
+ * - Reading balance display
+ * - Reading Wallet
+ * 
+ * Project Last Updated: 2021-05-23
+ * Project Last Updated By: 寒
+ */
+
 import React from 'react'
 
 import { Container } from 'react-bootstrap'
