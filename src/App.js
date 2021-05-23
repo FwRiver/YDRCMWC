@@ -24,11 +24,6 @@ import NewRecord from './components/NewRecord'
 import EditRecord from './components/EditRecord'
 import DeleteRecord from './components/DeleteRecord'
 
-import AdminLogin from './components/AdminPortal/Login'
-import AdminDashboard from './components/AdminPortal/Dashboard'
-import AdminManageUser from './components/AdminPortal/ManageUser'
-import AdminClassList from './components/AdminPortal/Classes'
-import AdminSignup from './components/AdminPortal/Signup'
 import Wallet from './components/Wallet'
 
 function App() {
