@@ -129,13 +129,6 @@ export default function Dashboard() {
             <p style={{fontSize: '18px'}}>
                 Your current reading class level: {user.reading_level}
                 <br />
-                Your curren reading balance: ${user.reading_balance}
-
-                {
-                // developing
-                }
-                {/* <br /> */}
-                {/* Current Reading Balance: ${} */} 
                 
             </p>
             <p></p>

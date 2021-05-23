@@ -29,6 +29,7 @@ import AdminDashboard from './components/AdminPortal/Dashboard'
 import AdminManageUser from './components/AdminPortal/ManageUser'
 import AdminClassList from './components/AdminPortal/Classes'
 import AdminSignup from './components/AdminPortal/Signup'
+import Wallet from './components/Wallet'
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
               <Route path="/signup" component={Signup} />
               <Route path="/login" component={Login} />
               <Route path="/forgot-password" component={ForgotPassword} />
+              <Route path="/wallet" component={Wallet} />
 
               <PrivateRoute exact path="/" component={Dashboard} />
               {/* <PrivateRoute path="/update-profile" component={UpdateProfile} /> */}
