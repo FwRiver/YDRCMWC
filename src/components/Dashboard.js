@@ -25,16 +25,37 @@ export default function Dashboard() {
     // const { currentUser } = useAuth()
     const currentUser = JSON.parse(localStorage.getItem('user'))
     const [records, setRecords] = useState([])
-    // const [users, setUsers] = useState([])
+    const [users, setUsers] = useState([])
     const [user, setUser] = useState({})
+    const [showUpdate, setUpdateShow] = useState(false)
+    const [updateInfo, setUpdateInfo] = useState({
+        added: [],
+        changed: []
+    })
+
     let words = 0
     let total_words = 0
 
     const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleClose = () => setUpdateShow(false);
+    const handleShow = () => setUpdateShow(true);
 
     useEffect(() => {
+
+        // get thios user's info
+        async function getUser() {
+            await db.collection('users').where('email', '==', currentUser.email).get().then(res => {
+                let info
+                if (!res.empty) {
+                    info = res.docs[0].data()
+                    info._id = res.docs[0].id
+                    // console.log(info)
+                    setUser(info)
+                }  
+            }).catch(err => console.log(err))
+        }
+
+        // Get this user's records
         async function getRecords() {
             await db.collection('records').where('email', '==', currentUser.email).orderBy("end_date","desc").get().then(res => {
                 let rec = []
@@ -50,36 +71,25 @@ export default function Dashboard() {
             }).catch(err => console.log(err))
         }
 
-        async function getUser() {
-            await db.collection('users').where('email', '==', currentUser.email).get().then(res => {
-                let info
-                if (!res.empty) {
-                    info = res.docs[0].data()
-                    // console.log(info)
-                    setUser(info)
-                }  
-            }).catch(err => console.log(err))
-        }
+        // Get Update Information
+        async function getUpdateInfo() {
+            let updateInfo = (await db.collection('config').doc('update_status').get()).data()
+            console.log(updateInfo.added)
+            
+            if (updateInfo.has_new_update) {
+                // console.log(currentUser.email)
+                // console.log("INFO: " + !((updateInfo.users_updated).includes(currentUser.email)))
+                if ( !((updateInfo.users_updated).includes(currentUser.email)) ) {
+                    handleShow()
+                }
+            }
 
-        // async function getAllUser() {
-        //     await db.collection('users').where("reading_level", "==", "G4-B").get().then(res => {
-        //         let users = []
-        //         if(!res.empty) {
-        //             res.forEach(item => {
-        //                 let user = item.data()
-        //                 user._id = item.id
-        //                 users.push(user)
-        //                 console.log(user.group + '-' + user.group_num + " | " + user.child_first_name + " " + user.child_last_name )
-        //             })
-        //             setUsers(users)
-        //             // console.log(users)
-        //         }
-        //     }).catch(err => console.log(err))
-        // }
+            setUpdateInfo(updateInfo)
+        }
 
         getUser()
         getRecords()
-        // getAllUser()
+        getUpdateInfo()
     
     }, [])
 
@@ -96,6 +106,8 @@ export default function Dashboard() {
         
     }
 
+    
+
     let current = new Date()
     // console.log(records)
     records.forEach((item) => {
@@ -109,6 +121,27 @@ export default function Dashboard() {
             words += item.book_word_count
     })
 
+
+    // user.reading_balance = 100;
+    // user.balance_details = [
+    //     {
+    //         date: "2020-05-12",
+    //         description: "Test Blance Inc Record",
+    //         type: 1,
+    //         amount: 100,
+    //         current_balance: 100 
+    //     },
+    //     {
+    //         date: "2020-05-12",
+    //         description: "Test Blance Expe Record",
+    //         type: 0,
+    //         amount: 50,
+    //         current_balance: 50 
+    //     }
+    // ]
+    console.log(user)
+    // db.collection('users').doc(user._id).update(user).then(res => console.log(res)).catch(err => console.log(err))
+
     
 
     return (
@@ -118,6 +151,8 @@ export default function Dashboard() {
             <h3 style={{margin: '10px 0px 0px 0px'}}>Welcome! {user.child_first_name}</h3>
             <p style={{fontSize: '18px'}}>
                 Your current reading class level: {user.reading_level}
+                <br />
+                Your curren reading balance: ${user.reading_balance}
 
                 {
                 // developing
@@ -175,23 +210,46 @@ export default function Dashboard() {
             </Table>
             {/* <Button variant="primary" onClick={getAllPassed}>Get</Button> */}
 
-            {/* <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                <Modal.Title>Confirmation</Modal.Title>
+            <Modal show={showUpdate} onHide={handleClose}>
+                <Modal.Header>
+                <Modal.Title>New Update Avaliable</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>Are you sure you want to delete this record? This act can't be cancelled</Modal.Body>
-                <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
-                    Cancel
-                </Button>
-                <Button variant="primary" onClick={handleClose}>
-                    Confirm
-                </Button>
-                </Modal.Footer>
-            </Modal> */}
-        </div>
-    )
+                <Modal.Body>
+                    <b>Version {updateInfo.version}</b>
+                    <br />
 
+                    {/* ADDED LIST */}
+                    <b>[+] Added</b>
+                    <br />
+                    <ul >
+                    {                        
+                        updateInfo.added.map((item) => 
+                            <li>{item}</li>
+                        )                       
+                    }
+                    </ul>
+
+                    {/* CHANGED LIST */}
+                    <b>[-] Changed</b>
+                    <br />
+                    <ul >
+                    {                        
+                        updateInfo.changed.map((item, key) => 
+                            <li>{item}</li>
+                        )                       
+                    }
+                    </ul>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={handleClose}>
+                        Update
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </div>
+    )   
+
+    // 备用函数
     // async function getAllPassed() {
     //     console.log("Processing...")
     //     let passed = []
