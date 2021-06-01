@@ -27,6 +27,7 @@ export default function Dashboard() {
     const currentUser = JSON.parse(localStorage.getItem('user'))
     const [records, setRecords] = useState([])
     const [user, setUser] = useState({})
+    const [list, setList] = useState({})
     const [showUpdate, setUpdateShow] = useState(false)
     const [updateInfo, setUpdateInfo] = useState({
         added: [],
@@ -87,9 +88,25 @@ export default function Dashboard() {
             setUpdateInfo(updateInfo)
         }
 
+        async function getAllUsers() {
+            await db.collection('users').where("reading_level", "==", "G6").get().then(res => {
+                let rec = []
+                if(!res.empty) {
+                    res.forEach(item => {
+                        let record = item.data()
+                        record._id = item.id
+                        rec.push(record)
+                    })
+                    setList(rec)
+                    // console.log(records)
+                }
+            }).catch(err => console.log(err))
+        }
+
         getUser()
         getRecords()
         getUpdateInfo()
+        getAllUsers()
     
     }, [])
 
@@ -106,6 +123,8 @@ export default function Dashboard() {
         
     }
 
+    console.log(list)
+
     
 
     let current = new Date()
@@ -114,9 +133,9 @@ export default function Dashboard() {
         let created = new Date(item.end_date)
 
         total_words += item.book_word_count
-        // console.log(item.book_word_count + " Current: "+ current.getMonth() + ":" + current.getFullYear())
-        // console.log(item.book_word_count + " Created: "+ created.getMonth() + ":" + created.getFullYear())
-        // console.log(created.getUTCMonth())
+        // console.log(" Current: "+ current.getMonth() + ":" + current.getFullYear())
+        // console.log(" Created: "+ created.getMonth() + ":" + created.getFullYear())
+        // console.log(current.getUTCMonth()-1)
         if ( (created.getUTCMonth() === current.getUTCMonth()) && (created.getUTCFullYear() === current.getUTCFullYear()) )
             words += item.book_word_count
     })
@@ -178,6 +197,9 @@ export default function Dashboard() {
                 )}
                 </tbody>
             </Table>
+            <Button variant="primary" onClick={getAllPassed}>
+                Update Now
+            </Button>
             {/* <Button variant="primary" onClick={getAllPassed}>Get</Button> */}
 
             <Modal show={showUpdate} onHide={handleClose}>
@@ -231,36 +253,43 @@ export default function Dashboard() {
     }
 
     // 备用函数
-    // async function getAllPassed() {
-    //     console.log("Processing...")
-    //     let passed = []
-    //     // console.log(users)
-    //     users.forEach(async(item) => {
-    //         // console.log(item)
-    //         await db.collection('records').where("email", "==", item.email).get().then(res => {
-    //             // console.log(res)
-    //             let total = 0
-    //             if (!res.empty) {
-    //                 res.forEach(item => {
-    //                     let rec = item.data()
-    //                     total += parseInt(rec.book_word_count)
+    async function getAllPassed() {
+        console.log("Processing...")
+        let passed = []
+        // console.log(users)
+        list.forEach(async(item) => {
+            // console.log(item)
+            await db.collection('records').where("email", "==", item.email).get().then(res => {
+                let total = 0
+                if (!res.empty) {
+                    res.forEach(item => {
+                        // console.log(item.data())
+                        let rec = item.data()
                         
-    //                 })
-    //             }              
-                
-    //             item.total = total
-    //             if (total >= 120000) {
-    //                 passed.push(item)
-    //                 console.log(item.group + "-" + item.group_num + " " + item.child_first_name + " " + item.child_last_name + " | " + total)
-    //             }
-    //         }).catch(err => console.log(err))
-    //     })
 
-    //     console.log(passed)
-    //     passed.forEach(item => {
-    //         console.log(item)
-    //     })
-    // }
+                        // Time check
+                        let created = new Date(rec.end_date)
+
+                        if ( (created.getUTCMonth() === current.getUTCMonth()-1) && (created.getUTCFullYear() === current.getUTCFullYear()) )
+                            total += rec.book_word_count
+                        
+                    })
+                }              
+                
+                item.total = total
+                let goal = getCurrentGoal(item.reading_level)
+                if (total >= goal) {
+                    passed.push(item)
+                    console.log(item.group + "-" + item.group_num + " " + item.child_first_name + " " + item.child_last_name + " | " + total)
+                }
+            }).catch(err => console.log(err))
+        })
+
+        console.log(passed)
+        passed.forEach(item => {
+            console.log(item)
+        })
+    }
 }
 
 //functions

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useHistory } from 'react-router-dom'
 import { Table } from 'react-bootstrap'
 
 import { db } from '../firebase'
@@ -12,7 +11,6 @@ export default function Wallet() {
         reading_balance: 0
     })
 
-    const history = useHistory()
     const currentUser = JSON.parse(localStorage.getItem('user'))
 
     useEffect(() => {
