@@ -27,7 +27,6 @@ export default function Dashboard() {
     const currentUser = JSON.parse(localStorage.getItem('user'))
     const [records, setRecords] = useState([])
     const [user, setUser] = useState({})
-    const [list, setList] = useState({})
     const [showUpdate, setUpdateShow] = useState(false)
     const [updateInfo, setUpdateInfo] = useState({
         added: [],
@@ -88,25 +87,9 @@ export default function Dashboard() {
             setUpdateInfo(updateInfo)
         }
 
-        async function getAllUsers() {
-            await db.collection('users').where("reading_level", "==", "G6").get().then(res => {
-                let rec = []
-                if(!res.empty) {
-                    res.forEach(item => {
-                        let record = item.data()
-                        record._id = item.id
-                        rec.push(record)
-                    })
-                    setList(rec)
-                    // console.log(records)
-                }
-            }).catch(err => console.log(err))
-        }
-
         getUser()
         getRecords()
         getUpdateInfo()
-        getAllUsers()
     
     }, [])
 
@@ -123,11 +106,8 @@ export default function Dashboard() {
         
     }
 
-    console.log(list)
-
     
-
-    let current = new Date()
+    let current = new Date();
     // console.log(records)
     records.forEach((item) => {
         let created = new Date(item.end_date)
@@ -197,10 +177,6 @@ export default function Dashboard() {
                 )}
                 </tbody>
             </Table>
-            <Button variant="primary" onClick={getAllPassed}>
-                Update Now
-            </Button>
-            {/* <Button variant="primary" onClick={getAllPassed}>Get</Button> */}
 
             <Modal show={showUpdate} onHide={handleClose}>
                 <Modal.Header>
@@ -251,45 +227,6 @@ export default function Dashboard() {
         })
         handleClose()
     }
-
-    // 备用函数
-    async function getAllPassed() {
-        console.log("Processing...")
-        let passed = []
-        // console.log(users)
-        list.forEach(async(item) => {
-            // console.log(item)
-            await db.collection('records').where("email", "==", item.email).get().then(res => {
-                let total = 0
-                if (!res.empty) {
-                    res.forEach(item => {
-                        // console.log(item.data())
-                        let rec = item.data()
-                        
-
-                        // Time check
-                        let created = new Date(rec.end_date)
-
-                        if ( (created.getUTCMonth() === current.getUTCMonth()-1) && (created.getUTCFullYear() === current.getUTCFullYear()) )
-                            total += rec.book_word_count
-                        
-                    })
-                }              
-                
-                item.total = total
-                let goal = getCurrentGoal(item.reading_level)
-                if (total >= goal) {
-                    passed.push(item)
-                    console.log(item.group + "-" + item.group_num + " " + item.child_first_name + " " + item.child_last_name + " | " + total)
-                }
-            }).catch(err => console.log(err))
-        })
-
-        console.log(passed)
-        passed.forEach(item => {
-            console.log(item)
-        })
-    }
 }
 
 //functions
@@ -309,10 +246,9 @@ function getCurrentGoal(level) {
     switch(true) {
         case /^K/.test(level):
         case /^G1/.test(level):
-            return 80000
         case /^G2/.test(level):
+            return 120000
         case /^G3/.test(level):
-            return 160000
         case /^G4/.test(level):
         case /^G5/.test(level):
             return 250000

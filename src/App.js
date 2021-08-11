@@ -24,15 +24,17 @@ import NewRecord from './components/NewRecord'
 import EditRecord from './components/EditRecord'
 import DeleteRecord from './components/DeleteRecord'
 
+import GetMonthlyPassed from './utils/getMonthlyPassed'
+
 import Wallet from './components/Wallet'
 
 function App() {
   return (
-    <Container style={{ minHeight: '100vh' }}>
+    <Container style={{ minHeight: "100vh" }}>
       <div className="w-100">
         <Router>
           <AuthProvider>
-            <Switch> 
+            <Switch>
               <Route path="/signup" component={Signup} />
               <Route path="/login" component={Login} />
               <Route path="/forgot-password" component={ForgotPassword} />
@@ -44,6 +46,7 @@ function App() {
               <PrivateRoute path="/edit-record" component={EditRecord} />
               <PrivateRoute path="/delete-record" component={DeleteRecord} />
 
+              {/* <PrivateRoute path="/get-monthly" component={GetMonthlyPassed} /> */}
             </Switch>
           </AuthProvider>
         </Router>
